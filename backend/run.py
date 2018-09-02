@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import rest, database, os, configparser, fetch
-from threading import Timer
+from threading import Timer, Lock
 
 path = os.path.dirname(os.path.abspath(__file__)) + '/'
 
@@ -12,10 +12,14 @@ database.init_db(settings['max_db'])
 
 t = None
 
+lock = Lock()
+
 def update_data():
     global t
     print('abc')
+    lock.acquire()
     fetch.update_cube(settings)
+    lock.release()
     print('def')
     # TODO configurable time
     t = Timer(300.0, update_data)
@@ -24,7 +28,9 @@ def update_data():
 
 def room_update(room_id, temperature):
     print(temperature)
+    lock.acquire()
     fetch.update_room(settings, room_id, temperature)
+    lock.release()
 
 
 def execute_api_update():
