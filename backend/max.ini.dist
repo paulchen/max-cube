@@ -1,0 +1,18 @@
+[max_db]
+host = localhost
+database = max
+username = max
+password =
+
+[sensors_db]
+hostname = localhost
+database = sensors
+username = sensors
+password = 
+
+[server]
+name = alpha
+url = https://rueckgr.at/sensors
+username = submit
+password =
+
