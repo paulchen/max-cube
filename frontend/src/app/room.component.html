@@ -1,0 +1,8 @@
+<h2>{{room.name}}</h2>
+<div>Room id: {{room.id}}</div>
+
+<ul>
+  <li *ngFor="let device of room.devices">
+    {{device.name}} - {{device.temperature}}°C
+  </li>
+</ul>
