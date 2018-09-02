@@ -25,8 +25,9 @@ def get_all_rooms():
 def update_room(room_id):
     # TODO more checks?
     data = request.data
+    print(data.decode('UTF-8'))
     dataDict = json.loads(data.decode('UTF-8'))
-    temperature = dataDict['temperature']
+    temperature = float(dataDict['temperature'])
     print(temperature)
     thread = Thread(target = room_callback, args = (room_id, temperature))
     thread.start()
