@@ -1,19 +1,12 @@
 #!/usr/bin/python3
 
-import database, time, MySQLdb, urllib3, requests, os, configparser
+import database, time, MySQLdb, urllib3, requests
 from pymax.cube import Cube
 from datetime import datetime
 
-path = os.path.dirname(os.path.abspath(__file__)) + '/'
-
-settings = configparser.ConfigParser()
-settings.read(path + 'max.ini')
-
-database.init_db(settings['max_db'])
-
 
 # TODO serious code duplication
-def submit_value(server, sensor_parts, what_parts, value_parts):
+def submit_value(db_settings, server, sensor_parts, what_parts, value_parts):
     start_time = time.time()
 
     sensor_string = ';'.join(sensor_parts)
@@ -25,7 +18,6 @@ def submit_value(server, sensor_parts, what_parts, value_parts):
     s.auth = (server['username'], server['password'])
 
     try:
-        db_settings = settings['sensors_db']
         db = MySQLdb.connect(host=db_settings['hostname'], user=db_settings['username'], passwd=db_settings['password'], db=db_settings['database'], autocommit=True)
 
         curs = db.cursor()
@@ -62,7 +54,7 @@ def submit_value(server, sensor_parts, what_parts, value_parts):
     end_time = time.time()
 
 
-def submit_temperature(cube_device):
+def submit_temperature(settings, cube_device):
     try:
         print('1: %s' % (cube_device.device_type, ))
         if cube_device.device_type != 3:
@@ -86,18 +78,21 @@ def submit_temperature(cube_device):
         sensor = 35
 
     # TODO support multiple servers
-    submit_value(settings['server'], (str(sensor), ), ('temp', ), (str(temperature), ))
+    submit_value(settings['sensors_db'], settings['server'], (str(sensor), ), ('temp', ), (str(temperature), ))
 
 
-# TODO configurable hostname/ip address
-cube = Cube('evn-cube')
-cube.connect()
+def update_cube(settings):
+    # TODO configurable hostname/ip address
+    cube = Cube('evn-cube')
+    cube.connect()
 
-for cube_room in cube.rooms:
-    database.save_or_update_room(cube_room)
+    for cube_room in cube.rooms:
+        database.save_or_update_room(cube_room)
 
-for cube_device in cube.devices:
-    database.save_or_update_device(cube_device)
+    for cube_device in cube.devices:
+        database.save_or_update_device(cube_device)
 
-    submit_temperature(cube_device)
+        submit_temperature(settings, cube_device)
+
+    cube.disconnect()
 
