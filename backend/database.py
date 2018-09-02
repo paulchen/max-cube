@@ -143,3 +143,9 @@ def get_all_rooms():
         rooms.append(room)
     return rooms
 
+
+@db_session
+def get_room_rf_address(room_id):
+    room = Room[room_id]
+    return room.rf_address
+

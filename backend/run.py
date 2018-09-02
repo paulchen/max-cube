@@ -22,6 +22,11 @@ def update_data():
     t.start()
 
 
+def room_update(room_id, temperature):
+    print(temperature)
+    fetch.update_room(settings, room_id, temperature)
+
+
 def execute_api_update():
     global t
 
@@ -32,5 +37,5 @@ def execute_api_update():
 
 update_data()
 
-rest.run_api(execute_api_update)
+rest.run_api(execute_api_update, room_update)
 

@@ -96,3 +96,17 @@ def update_cube(settings):
 
     cube.disconnect()
 
+
+def update_room(settings, room_id, temperature):
+    print(temperature)
+
+    cube = Cube('evn-cube')
+    cube.connect()
+
+    rf_address = database.get_room_rf_address(room_id)
+
+    cube.set_mode_manual(room_id, rf_address, temperature)
+
+    cube.disconnect()
+
+
