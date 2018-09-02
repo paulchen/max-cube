@@ -131,6 +131,7 @@ def save_or_update_device(cube_device):
 
 @db_session
 def get_all_rooms():
+    # TODO stable ordering
     db_rooms = select(r for r in Room)[:]
     rooms = []
     for db_room in db_rooms:
