@@ -10,6 +10,8 @@ import {RoomList} from './roomList';
 })
 export class AppComponent implements OnInit {
   private backendUrl = 'https://loosdorf.ddns.rueckgr.at/max/rooms';
+  private triggerUpdateUrl = 'https://loosdorf.ddns.rueckgr.at/max/update';
+
   rooms: Room[];
 
   constructor(
@@ -17,7 +19,15 @@ export class AppComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.reloadData();
+  }
+
+  reloadData() {
     this.http.get<RoomList>(this.backendUrl)
       .subscribe(rooms => this.rooms = rooms.rooms);
+  }
+
+  triggerBackendUpdate() {
+    this.http.get(this.triggerUpdateUrl).subscribe();
   }
 }

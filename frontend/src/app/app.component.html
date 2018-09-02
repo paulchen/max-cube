@@ -1,5 +1,11 @@
 <h1>Heizungssteuerung</h1>
 <div>
+  <a href="#" (click)="triggerBackendUpdate()">Trigger update</a>
+</div>
+<div>
+  <a href="#" (click)="reloadData()">Reload</a>
+</div>
+<div>
   <div *ngFor="let room of rooms">
     <app-room [room]="room"></app-room>
   </div>
