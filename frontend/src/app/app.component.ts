@@ -24,7 +24,14 @@ export class AppComponent implements OnInit {
 
   reloadData() {
     this.http.get<RoomList>(this.backendUrl)
-      .subscribe(rooms => this.rooms = rooms.rooms);
+      .subscribe(rooms => {
+        for (const room of rooms.rooms) {
+          for (const device of room.devices) {
+            room.temperature = device.temperature;
+          }
+        }
+        this.rooms = rooms.rooms;
+      });
   }
 
   triggerBackendUpdate() {

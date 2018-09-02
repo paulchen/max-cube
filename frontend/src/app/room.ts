@@ -4,4 +4,5 @@ export class Room {
   id: number;
   name: string;
   devices: Device[];
+  temperature: number;
 }

@@ -6,3 +6,11 @@
     {{device.name}} - {{device.temperature}}°C
   </li>
 </ul>
+
+<div>
+  <label for="room_temperature_{{room.id}}">
+    New temperature:
+  </label>
+  <input [(ngModel)]="temperature" id="room_temperature_{{room.id}}" />
+  <button (click)="update_room(room.id);">Submit</button>
+</div>
