@@ -3,7 +3,8 @@
 
 <ul>
   <li *ngFor="let device of room.devices">
-    {{device.name}} - {{device.temperature}}°C
+    {{device.name}} - Soll: {{device.temperature}}°C
+    <span *ngIf="device.actual_temperature != 0"> - Ist: {{device.actual_temperature}}°C</span>
   </li>
 </ul>
 
