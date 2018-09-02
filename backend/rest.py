@@ -5,7 +5,7 @@ from flask_restful import Resource, Api
 from flask_cors import CORS
 import database
 
-def run_api():
+def run_api(execute_api_update):
     app = Flask(__name__)
     api = Api(app)
     # TODO configurable origins
@@ -18,7 +18,13 @@ def run_api():
             rooms = database.get_all_rooms()
             return jsonify({'rooms': rooms})
 
+    class UpdateApi(Resource):
+        def get(self):
+            execute_api_update()
+            return jsonify({'status': 'ok'})
+
     api.add_resource(RoomApi, '/max/rooms')
+    api.add_resource(UpdateApi, '/max/update')
 
     # TODO configurable port
     app.run(port=5003)

@@ -21,7 +21,16 @@ def update_data():
     t = Timer(300.0, update_data)
     t.start()
 
+
+def execute_api_update():
+    global t
+
+    if t is not None:
+        t.cancel()
+    update_data()
+
+
 update_data()
 
-rest.run_api()
+rest.run_api(execute_api_update)
 
