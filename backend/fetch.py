@@ -61,7 +61,8 @@ def submit_temperature(settings, cube_device):
             return
         print('2')
         room_id = cube_device.room_id
-        temperature = cube_device.settings.actual_temperature
+        actual_temperature = cube_device.settings.actual_temperature
+        target_temperature = cube_device.settings.temperature
     except AttributeError:
         # fuck the cube
         return
@@ -69,16 +70,20 @@ def submit_temperature(settings, cube_device):
     # TODO make this mapping configurable
     print('3')
     if room_id == 1:
-        sensor = 38
+        actual_sensor = 38
+        target_sensor = 42
     elif room_id == 2:
-        sensor = 37
+        actual_sensor = 37
+        target_sensor = 41
     elif room_id == 3:
-        sensor = 36
+        actual_sensor = 36
+        target_sensor = 40
     elif room_id == 4:
-        sensor = 35
+        actual_sensor = 35
+        target_sensor = 39
 
     # TODO support multiple servers
-    submit_value(settings['sensors_db'], settings['server'], (str(sensor), ), ('temp', ), (str(temperature), ))
+    submit_value(settings['sensors_db'], settings['server'], (str(actual_sensor), str(target_sensor)), ('temp', 'temp'), (str(actual_temperature), str(target_temperature)))
 
 
 def update_cube(settings):
