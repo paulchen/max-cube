@@ -16,3 +16,9 @@ url = https://rueckgr.at/sensors
 username = submit
 password =
 
+[server]
+name = gamma
+url = https://gamma.rueckgr.at/sensors
+username = submit
+password =
+

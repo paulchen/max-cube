@@ -83,7 +83,8 @@ def submit_temperature(settings, cube_device):
         target_sensor = 39
 
     # TODO support multiple servers
-    submit_value(settings['sensors_db'], settings['server'], (str(actual_sensor), str(target_sensor)), ('temp', 'temp'), (str(actual_temperature), str(target_temperature)))
+    submit_value(settings['sensors_db'], settings['server1'], (str(actual_sensor), str(target_sensor)), ('temp', 'temp'), (str(actual_temperature), str(target_temperature)))
+    submit_value(settings['sensors_db'], settings['server2'], (str(actual_sensor), str(target_sensor)), ('temp', 'temp'), (str(actual_temperature), str(target_temperature)))
 
 
 def update_cube(settings):
