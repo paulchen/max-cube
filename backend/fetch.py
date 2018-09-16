@@ -92,16 +92,72 @@ def update_cube(settings):
     cube = Cube('evn-cube')
     cube.connect()
 
-    for cube_room in cube.rooms:
+    cube_rooms = cube.rooms
+    for cube_room in cube_rooms:
         database.save_or_update_room(cube_room)
 
+    problems = []
     for cube_device in cube.devices:
         database.save_or_update_device(cube_device)
 
         submit_temperature(settings, cube_device)
 
+        problems.extend(check_for_problems(cube_device, cube_rooms))
+
     cube.disconnect()
 
+    status = 0
+    description = 'No problems detected'
+    if len(problems) > 0:
+        status = max([p[0] for p in problems])
+        description = 'Problems: ' + '; '.join([p[1] for p in problems])
+
+    status_file = open('icinga.status', 'w')
+    status_file.write(str(status) + '\n')
+    status_file.write(description + '\n')
+    status_file.close()
+
+
+def check_for_problems(cube_device, cube_rooms):
+    try:
+        room_id = cube_device.room_id
+    except AttributeError:
+        # the cube itself
+        return []
+
+    if cube_device.room_id == 0:
+        # ECO key
+        return []
+
+    link_ok = cube_device.settings.link_ok
+    battery_low = cube_device.settings.battery_low
+
+    problem = not link_ok or battery_low
+    if problem:
+        cube_room = find_cube_room(cube_rooms, room_id)
+
+        if cube_room is None:
+            # TODO wtf
+            print("This is wrong!")
+
+        status = 0
+        if battery_low:
+            status = 1
+        if not link_ok:
+            status = 2
+
+        message = "Room=%s,device=%s/%s,link_ok=%s,battery_low=%s" % (cube_room.name, cube_device.name, cube_device.serial, link_ok, battery_low)
+        return [(status, message)]
+
+    return []
+
+
+def find_cube_room(cube_rooms, room_id):
+    for cube_room in cube_rooms:
+        if cube_room.room_id == room_id:
+            return cube_room
+
+    return None
 
 def update_room(settings, room_id, temperature):
     print(temperature)
