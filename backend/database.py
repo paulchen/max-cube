@@ -88,6 +88,7 @@ def save_or_update_room(cube_room):
         room = Room[cube_room.room_id]
         # room.version = room.version + 1
         room.name = cube_room.name
+        print("Room: %s" % (room.name, ))
         room.rf_address = str(cube_room.rf_address)
         timestamp = datetime.now()
     except ObjectNotFound:
@@ -111,6 +112,12 @@ def save_or_update_device(cube_device):
         device.name = cube_device.name
         device.rf_address = str(cube_device.rf_address)
         device.timestamp = datetime.now()
+    
+    if room is not None:
+        print("Room: %s, device: %s" % (room.name, device.name))
+    else:
+        print("Room: %s, device: %s" % (cube_device.room_id, device.name))
+
     device.device_type = cube_device.device_type
     device.room_id = room
     if cube_device.device_type in (1, 3):
