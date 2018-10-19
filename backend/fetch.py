@@ -6,6 +6,7 @@ from datetime import datetime
 
 
 last_run = None
+skip_temperature_changes = 0
 
 
 def current_milli_time():
@@ -147,6 +148,12 @@ def update_rooms(settings, update_data):
 
 
 def change_temperature_twice(settings, problems):
+    global skip_temperature_changes
+
+    if skip_temperature_changes > 0:
+        skip_temperature_changes -= 1
+        return
+
     room_ids = []
 
     update_data1 = []
@@ -176,6 +183,9 @@ def change_temperature_twice(settings, problems):
     time.sleep(120)
 
     update_rooms(settings, update_data2)
+
+    # TODO make this configurable
+    skip_temperature_changes = 120
 
 
 def write_status_file(problems):
