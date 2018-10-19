@@ -5,6 +5,31 @@ from pymax.cube import Cube
 from datetime import datetime
 
 
+last_run = None
+
+
+def current_milli_time():
+    return int(round(time.time() * 1000))
+
+
+def cube_wait1():
+    global last_run
+
+    if last_run is None:
+        return
+
+    diff = current_milli_time() - last_run
+    # TODO configurable time span
+    if diff < 5000:
+        time.sleep(5 - diff/1000)
+
+
+def cube_wait2():
+    global last_run
+
+    last_run = current_milli_time()
+
+
 # TODO serious code duplication
 def submit_value(db_settings, server, sensor_parts, what_parts, value_parts):
     start_time = time.time()
@@ -91,6 +116,8 @@ def submit_temperature(settings, cube_device):
 
 
 def update_cube(settings):
+    cube_wait1()
+
     # TODO configurable hostname/ip address
     cube = Cube('evn-cube')
     cube.connect()
@@ -108,7 +135,44 @@ def update_cube(settings):
         problems.extend(check_for_problems(cube_device, cube_rooms))
 
     cube.disconnect()
+    
+    cube_wait2()
 
+    return problems
+
+
+def update_rooms(settings, update_data):
+    for update_item in update_data:
+        update_room(settings, update_item[0], update_item[1])
+
+
+def change_temperature_twice(settings, problems):
+    room_ids = []
+
+    update_data1 = []
+    update_data2 = []
+
+    for problem in problems:
+        cube_room = problem[2]
+        cube_device = problem[3]
+
+        room_id = cube_room.room_id
+        if room_id not in room_ids:
+            temperature = cube_device.settings.actual_temperature
+            # TODO use a dict here
+            update_data1.append((room_id, temperature + .5))
+            update_data2.append((room_id, temperature))
+            room_ids.append(room_id)
+
+
+    update_rooms(settings, update_data1)
+
+    time.sleep(120)
+
+    update_rooms(settings, update_data2)
+
+
+def write_status_file(problems):
     status = 0
     description = 'No problems detected'
     if len(problems) > 0:
@@ -119,6 +183,16 @@ def update_cube(settings):
     status_file.write(str(status) + '\n')
     status_file.write(description + '\n')
     status_file.close()
+
+
+def update_and_check_cube(settings):
+    problems = update_cube(settings)
+
+    if len(problems) > 0:
+        change_temperature_twice(settings, problems)
+        problems = update_cube(settings)
+
+    write_status_file(problems)
 
 
 def check_for_problems(cube_device, cube_rooms):
@@ -150,7 +224,8 @@ def check_for_problems(cube_device, cube_rooms):
             status = 2
 
         message = "Room=%s,device=%s/%s,link_ok=%s,battery_low=%s" % (cube_room.name, cube_device.name, cube_device.serial, link_ok, battery_low)
-        return [(status, message)]
+        # TODO use a dict here
+        return [(status, message, cube_room, cube_device)]
 
     return []
 
@@ -162,8 +237,11 @@ def find_cube_room(cube_rooms, room_id):
 
     return None
 
+
 def update_room(settings, room_id, temperature):
     print(temperature)
+
+    cube_wait1()
 
     cube = Cube('evn-cube')
     cube.connect()
@@ -173,5 +251,8 @@ def update_room(settings, room_id, temperature):
     cube.set_mode_manual(room_id, rf_address, temperature)
 
     cube.disconnect()
+
+    cube_wait2()
+
 
 
