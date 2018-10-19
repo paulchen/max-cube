@@ -81,6 +81,9 @@ def submit_temperature(settings, cube_device):
     elif room_id == 4:
         actual_sensor = 35
         target_sensor = 39
+    else:
+        # TODO
+        return
 
     # TODO support multiple servers
     submit_value(settings['sensors_db'], settings['server1'], (str(actual_sensor), str(target_sensor)), ('temp', 'temp'), (str(actual_temperature), str(target_temperature)))
