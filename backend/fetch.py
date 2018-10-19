@@ -155,14 +155,20 @@ def change_temperature_twice(settings, problems):
     for problem in problems:
         cube_room = problem[2]
         cube_device = problem[3]
+        link_ok = problem[4]
+
+        if link_ok:
+            continue
 
         room_id = cube_room.room_id
-        if room_id not in room_ids:
-            temperature = cube_device.settings.actual_temperature
-            # TODO use a dict here
-            update_data1.append((room_id, temperature + .5))
-            update_data2.append((room_id, temperature))
-            room_ids.append(room_id)
+        if room_id in room_ids:
+            continue
+
+        temperature = cube_device.settings.actual_temperature
+        # TODO use a dict here
+        update_data1.append((room_id, temperature + .5))
+        update_data2.append((room_id, temperature))
+        room_ids.append(room_id)
 
 
     update_rooms(settings, update_data1)
@@ -225,7 +231,7 @@ def check_for_problems(cube_device, cube_rooms):
 
         message = "Room=%s,device=%s/%s,link_ok=%s,battery_low=%s" % (cube_room.name, cube_device.name, cube_device.serial, link_ok, battery_low)
         # TODO use a dict here
-        return [(status, message, cube_room, cube_device)]
+        return [(status, message, cube_room, cube_device, link_ok, not battery_low)]
 
     return []
 
