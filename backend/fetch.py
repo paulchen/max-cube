@@ -174,7 +174,7 @@ def change_temperature_twice(settings, problems):
         if room_id in room_ids:
             continue
 
-        temperature = cube_device.settings.actual_temperature
+        temperature = cube_device.settings.temperature
         # TODO use a dict here
         update_data1.append((room_id, temperature + .5))
         update_data2.append((room_id, temperature))
