@@ -155,6 +155,7 @@ def change_temperature_twice(settings, problems):
 
     if skip_temperature_changes > 0:
         skip_temperature_changes -= 1
+        print("Not changing temperature (last change not enough time ago), %s updates remaining" % (skip_temperature_changes, ))
         return
 
     room_ids = []
@@ -208,9 +209,11 @@ def update_and_check_cube(settings):
     problems = update_cube(settings)
 
     if len(problems) > 0:
+        print('Problems detected, changing temperature twice: %s' % (problems, ))
         change_temperature_twice(settings, problems)
         problems = update_cube(settings)
 
+    print('Problems now: %s' % (problems, ))
     write_status_file(problems)
 
 
@@ -258,7 +261,7 @@ def find_cube_room(cube_rooms, room_id):
 
 
 def update_room(settings, room_id, temperature):
-    print(temperature)
+    print('changing temperature of room %s to %s' % (room_id, temperature))
 
     cube_wait1()
 
@@ -272,6 +275,8 @@ def update_room(settings, room_id, temperature):
     cube.disconnect()
 
     cube_wait2()
+
+    print('changing temperature of room %s to %s done' % (room_id, temperature))
 
 
 
