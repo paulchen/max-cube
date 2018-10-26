@@ -107,6 +107,9 @@ def submit_temperature(settings, cube_device):
     elif room_id == 4:
         actual_sensor = 35
         target_sensor = 39
+    elif room_id == 5:
+        actual_sensor = 44
+        target_sensor = 45
     else:
         # TODO
         return
