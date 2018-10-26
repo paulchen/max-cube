@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 
-import rest, database, os, configparser, fetch, time
+import rest, database, os, configparser, fetch, time, logging
 from threading import Timer, Lock
+from log import logger
 
 path = os.path.dirname(os.path.abspath(__file__)) + '/'
 
@@ -22,11 +23,11 @@ def touch(path):
 
 def update_data():
     global t
-    print('abc')
+    logger.info('Starting update')
     lock.acquire()
     try:
         fetch.update_and_check_cube(settings)
-        print('def')
+        logger.info('Update completed succssfully')
         # TODO configurable file
         touch('last_cube_update')
     finally:
@@ -37,7 +38,6 @@ def update_data():
 
 
 def room_update(room_id, temperature):
-    print(temperature)
     lock.acquire()
     try:
         fetch.update_room(settings, room_id, temperature)

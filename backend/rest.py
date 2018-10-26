@@ -4,6 +4,7 @@ from flask import Flask, request, jsonify
 from flask_restful import Resource, Api
 from flask_cors import CORS
 from threading import Thread
+from log import logger
 import database, json
 
 app = Flask(__name__)
@@ -25,10 +26,10 @@ def get_all_rooms():
 def update_room(room_id):
     # TODO more checks?
     data = request.data
-    print(data.decode('UTF-8'))
+    logger.debug("Update request received: %s", data.decode('UTF-8'))
     dataDict = json.loads(data.decode('UTF-8'))
     temperature = float(dataDict['temperature'])
-    print(temperature)
+    logger.debug('New temperature: %s', temperature)
     thread = Thread(target = room_callback, args = (room_id, temperature))
     thread.start()
     return jsonify({'status': 'ok'})

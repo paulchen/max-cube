@@ -3,6 +3,7 @@
 import database, time, MySQLdb, urllib3, requests
 from pymax.cube import Cube
 from datetime import datetime
+from log import logger
 
 
 last_run = None
@@ -50,11 +51,10 @@ def submit_value(db_settings, server, sensor_parts, what_parts, value_parts):
         curs.execute('INSERT INTO cache (`server`, `sensors`, `whats`, `values`) VALUES (%s, %s, %s, %s)', (server['name'], sensor_string, what_string, value_string))
         rowid = curs.lastrowid
 
-        # logger.info('Submitting values: sensors=%s, whats=%s, values=%s', sensor_string, what_string, value_string)
-        print('Submitting values: sensors=%s, whats=%s, values=%s' % (sensor_string, what_string, value_string))
+        logger.info('Submitting values: sensors=%s, whats=%s, values=%s', sensor_string, what_string, value_string)
         resp = s.get(url, params={'action': 'submit', 'sensors': sensor_string, 'whats': what_string, 'values': value_string}, timeout=30)
         content = resp.text
-        print('content: %s' % (content, ))
+        logger.info('Response content: %s', content)
         if content != 'ok':
             raise requests.exceptions.RequestException
 
@@ -63,18 +63,15 @@ def submit_value(db_settings, server, sensor_parts, what_parts, value_parts):
         db.close()
         
     except urllib3.exceptions.ConnectTimeoutError:
-#        logger.error('Timeout during update')
-        print('Timeout during update')
+        logger.error('Timeout during update')
         return
 
     except urllib3.exceptions.ReadTimeoutError:
-#        logger.error('Timeout during update')
-        print('Timeout during update')
+        logger.error('Timeout during update')
         return
 
     except requests.exceptions.RequestException:
-#        logger.error('Error during update')
-        print('Error during update')
+        logger.error('Error during update')
         return
 
     end_time = time.time()
@@ -82,10 +79,8 @@ def submit_value(db_settings, server, sensor_parts, what_parts, value_parts):
 
 def submit_temperature(settings, cube_device):
     try:
-        print('1: %s' % (cube_device.device_type, ))
         if cube_device.device_type != 3:
             return
-        print('2')
         room_id = cube_device.room_id
         actual_temperature = cube_device.settings.actual_temperature
         target_temperature = cube_device.settings.temperature
@@ -94,7 +89,6 @@ def submit_temperature(settings, cube_device):
         return
 
     # TODO make this mapping configurable
-    print('3')
     if room_id == 1:
         actual_sensor = 38
         target_sensor = 42
@@ -155,7 +149,7 @@ def change_temperature_twice(settings, problems):
 
     if skip_temperature_changes > 0:
         skip_temperature_changes -= 1
-        print("Not changing temperature (last change not enough time ago), %s updates remaining" % (skip_temperature_changes, ))
+        logger.info("Not changing temperature (last change not enough time ago), %s updates remaining", skip_temperature_changes)
         return
 
     room_ids = []
@@ -209,11 +203,11 @@ def update_and_check_cube(settings):
     problems = update_cube(settings)
 
     if len(problems) > 0:
-        print('Problems detected, changing temperature twice: %s' % (problems, ))
+        logger.info('Problems detected, changing temperature twice: %s', problems)
         change_temperature_twice(settings, problems)
         problems = update_cube(settings)
 
-    print('Problems now: %s' % (problems, ))
+    logger.info('Problems now: %s', problems)
     write_status_file(problems)
 
 
@@ -237,7 +231,7 @@ def check_for_problems(cube_device, cube_rooms):
 
         if cube_room is None:
             # TODO wtf
-            print("This is wrong!")
+            logger.error("This is wrong!")
 
         status = 0
         if battery_low:
@@ -261,7 +255,7 @@ def find_cube_room(cube_rooms, room_id):
 
 
 def update_room(settings, room_id, temperature):
-    print('changing temperature of room %s to %s' % (room_id, temperature))
+    logger.info('changing temperature of room %s to %s', room_id, temperature)
 
     cube_wait1()
 
@@ -276,7 +270,7 @@ def update_room(settings, room_id, temperature):
 
     cube_wait2()
 
-    print('changing temperature of room %s to %s done' % (room_id, temperature))
+    logger.info('changing temperature of room %s to %s done', room_id, temperature)
 
 
 

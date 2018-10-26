@@ -3,6 +3,7 @@
 from datetime import datetime
 from pony.orm import *
 from decimal import Decimal
+from log import logger
 
 
 db = Database()
@@ -88,7 +89,7 @@ def save_or_update_room(cube_room):
         room = Room[cube_room.room_id]
         # room.version = room.version + 1
         room.name = cube_room.name
-        print("Room: %s" % (room.name, ))
+        logger.info("Room loaded from database: %s", room.name)
         room.rf_address = str(cube_room.rf_address)
         timestamp = datetime.now()
     except ObjectNotFound:
@@ -114,9 +115,9 @@ def save_or_update_device(cube_device):
         device.timestamp = datetime.now()
     
     if room is not None:
-        print("Room: %s, device: %s" % (room.name, device.name))
+        logger.info("Updating room: %s, device: %s", room.name, device.name)
     else:
-        print("Room: %s, device: %s" % (cube_device.room_id, device.name))
+        logger.info("Updating room: %s, device: %s" , cube_device.room_id, device.name)
 
     device.device_type = cube_device.device_type
     device.room_id = room
