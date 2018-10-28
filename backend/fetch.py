@@ -147,8 +147,8 @@ def update_rooms(settings, update_data):
 def change_temperature_twice(settings, problems):
     global skip_temperature_changes
 
+    skip_temperature_changes -= 1
     if skip_temperature_changes > 0:
-        skip_temperature_changes -= 1
         logger.info("Not changing temperature (last change not enough time ago), %s updates remaining", skip_temperature_changes)
         return
 
@@ -183,7 +183,7 @@ def change_temperature_twice(settings, problems):
     update_rooms(settings, update_data2)
 
     # TODO make this configurable
-    skip_temperature_changes = 120
+    skip_temperature_changes = 12
 
 
 def write_status_file(problems):
