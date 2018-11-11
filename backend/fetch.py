@@ -199,13 +199,16 @@ def write_status_file(problems):
     status_file.close()
 
 
-def update_and_check_cube(settings):
+def update_and_check_cube(settings, first_run):
     problems = update_cube(settings)
 
     if len(problems) > 0:
-        logger.info('Problems detected, changing temperature twice: %s', problems)
-        change_temperature_twice(settings, problems)
-        problems = update_cube(settings)
+        if first_run:
+            logger.info('Problems detected during first data update, temperatures not changed now')
+        else:
+            logger.info('Problems detected, changing temperature twice: %s', problems)
+            change_temperature_twice(settings, problems)
+            problems = update_cube(settings)
 
     logger.info('Problems now: %s', problems)
     write_status_file(problems)

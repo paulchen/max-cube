@@ -21,19 +21,19 @@ def touch(path):
         os.utime(path, None)
 
 
-def update_data():
+def update_data(first_run):
     global t
     logger.info('Starting update')
     lock.acquire()
     try:
-        fetch.update_and_check_cube(settings)
+        fetch.update_and_check_cube(settings, first_run)
         logger.info('Update completed succssfully')
         # TODO configurable file
         touch('last_cube_update')
     finally:
         lock.release()
         # TODO configurable time
-        t = Timer(300.0, update_data)
+        t = Timer(300.0, update_data, [False])
         t.start()
 
 
@@ -50,10 +50,10 @@ def execute_api_update():
 
     if t is not None:
         t.cancel()
-    update_data()
+    update_data(False)
 
 
-update_data()
+update_data(True)
 
 rest.run_api(execute_api_update, room_update)
 
