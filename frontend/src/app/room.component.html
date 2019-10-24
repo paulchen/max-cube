@@ -1,17 +1,21 @@
-<h2>{{room.name}}</h2>
-<div>Room id: {{room.id}}</div>
+<p-panel [class.panel-modified]="temperature != initialTemperature">
+  <p-header>{{room.name}}</p-header>
+  <div>
+    <div>Room id: {{room.id}}</div>
 
-<ul>
-  <li *ngFor="let device of room.devices">
-    {{device.name}} - Soll: {{device.temperature}}°C
-    <span *ngIf="device.actual_temperature != 0"> - Ist: {{device.actual_temperature}}°C</span>
-  </li>
-</ul>
+    <ul>
+      <li *ngFor="let device of room.devices">
+        {{device.name}} - Soll: {{device.temperature}}°C
+        <span *ngIf="device.actual_temperature != 0"> - Ist: {{device.actual_temperature}}°C</span>
+      </li>
+    </ul>
 
-<div>
-  <label for="room_temperature_{{room.id}}">
-    New temperature:
-  </label>
-  <input [(ngModel)]="temperature" id="room_temperature_{{room.id}}" />
-  <button (click)="update_room(room.id);">Submit</button>
-</div>
+    <div>
+      <div>
+        <button pButton type="button" icon="pi pi-minus" title="Temperatur verringern" (click)="decreaseTemperature()" [disabled]="decreaseDisabled"></button>
+        <input [(ngModel)]="temperature" pInputText disabled="true" size="4" style="text-align: right;" />
+        <button pButton type="button" icon="pi pi-plus" title="Temperatur erhöhen" (click)="increaseTemperature()" [disabled]="increaseDisabled"></button>
+      </div>
+    </div>
+  </div>
+</p-panel>
