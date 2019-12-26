@@ -1,6 +1,5 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, Output, OnInit, EventEmitter} from '@angular/core';
 import {Room} from './room';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
 
 @Component({
   selector: 'app-room',
@@ -8,26 +7,42 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
   styleUrls: ['./room.component.css']
 })
 export class RoomComponent implements OnInit {
-  private backendUrl = 'https://loosdorf.ddns.rueckgr.at/max/rooms/';
+  private minTemperature = 5;
+  private maxTemperature = 25;
+  private step = .5;
 
   @Input() room: Room;
-  temperature: number;
+  @Output() roomChange = new EventEmitter();
 
-  constructor(
-    private http: HttpClient
-  ) { }
+  initialTemperature: number;
+  temperature: number;
+  decreaseDisabled: boolean = false;
+  increaseDisabled: boolean = false;
 
   ngOnInit(): void {
     this.temperature = this.room.temperature;
+    this.initialTemperature = this.temperature;
+
+    this.updateButtons();
   }
 
-  update_room(room_id: number) {
-    const url = this.backendUrl + room_id;
+  decreaseTemperature() {
+    this.temperature = Math.max(this.temperature - this.step, this.minTemperature);
+    this.handleChange();
+  }
 
-    const httpOptions = {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-    };
-    const body = {temperature: this.temperature};
-    this.http.post(url, body, httpOptions).subscribe();
+  increaseTemperature() {
+    this.temperature = Math.min(this.temperature + this.step, this.maxTemperature);
+    this.handleChange();
+  }
+
+  handleChange() {
+    this.updateButtons();
+    this.roomChange.emit({room: this.room, temperature: this.temperature});
+  }
+
+  updateButtons() {
+    this.decreaseDisabled = this.temperature <= this.minTemperature;
+    this.increaseDisabled = this.temperature >= this.maxTemperature;
   }
 }

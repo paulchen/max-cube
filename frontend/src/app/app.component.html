@@ -1,13 +1,19 @@
 <h1>Heizungssteuerung</h1>
-<div>
-  <a href="#" (click)="triggerBackendUpdate()">Trigger update</a>
-</div>
-<div>
-  <a href="#" (click)="reloadData()">Reload</a>
-</div>
-<div>
-  <div *ngFor="let room of rooms">
-    <app-room [room]="room"></app-room>
+
+<p-messages [(value)]="msgs"></p-messages>
+
+<div *ngIf="showContent">
+  <div class="p-grid">
+    <div *ngFor="let room of rooms" class="p-col-12 p-md-6 p-lg-3 p-col-align-stretch">
+      <app-room [room]="room" (roomChange)='roomChange($event);'></app-room>
+    </div>
+  </div>
+
+  <div>
+    <button (click)="updateRooms();" pButton label="Speichern" [disabled]="saveDisabled"></button>
   </div>
 </div>
 
+<div *ngIf="showSpinner">
+  <p-progressSpinner></p-progressSpinner>
+</div>

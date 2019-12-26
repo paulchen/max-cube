@@ -1,1 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
+body {
+  font-family: "Open Sans","Helvetica Neue",sans-serif;
+}
+.panel-modified div.ui-panel-content-wrapper,
+.panel-modified div.ui-panel-content {
+  background-color: palegreen !important;
+}
