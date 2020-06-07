@@ -11,8 +11,8 @@ import {catchError} from 'rxjs/operators';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  private backendUrl = 'https://loosdorf.ddns.rueckgr.at/max/rooms';
-  private triggerUpdateUrl = 'https://loosdorf.ddns.rueckgr.at/max/update';
+  private backendUrl = 'https://alniyat.ddns.rueckgr.at/max/rooms';
+  private triggerUpdateUrl = 'https://alniyat.ddns.rueckgr.at/max/update';
 
   private waitTime1 = 60000;
   private waitTime2 = 15000;
