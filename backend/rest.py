@@ -19,6 +19,7 @@ room_callback = None
 def get_all_rooms():
     # TODO more checks?
     rooms = database.get_all_rooms()
+    logger.debug('rooms: %s', rooms)
     return jsonify({'rooms': rooms})
 
 
